@@ -16,3 +16,6 @@ Thumbs.db
 # IDEs and editors
 .vscode/
 .idea/
+
+# Embedded repository
+threadly-backend/
