@@ -1,0 +1,35 @@
+steps:
+  # Schritt 1: Docker-Image bauen
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/threadly-backend:latest', '.']
+
+  # Schritt 2: Docker-Image pushen
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/threadly-backend:latest']
+
+  # Schritt 3: Deploy zu Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'threadly-backend'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/threadly-backend:latest'
+      - '--platform'
+      - 'managed'
+      - '--region'
+      - 'europe-west3'
+      - '--allow-unauthenticated'
+      - '--update-secrets'
+      - 'FIREBASE_SERVICE_ACCOUNT=FIREBASE_SERVICE_ACCOUNT:latest'
+      - '--set-env-vars'
+      - |
+        OPENAI_API_KEY=$(gcloud secrets versions access latest --secret=OPENAI_API_KEY),
+        PRINTFUL_API_KEY=$(gcloud secrets versions access latest --secret=PRINTFUL_API_KEY),
+        SHOPIFY_STORE_NAME=$(gcloud secrets versions access latest --secret=SHOPIFY_STORE_NAME),
+        SHOPIFY_ACCESS_TOKEN=$(gcloud secrets versions access latest --secret=SHOPIFY_ACCESS_TOKEN),
+        GCLOUD_PROJECT=$(gcloud config get-value project),
+        FIREBASE_STORAGE_BUCKET=$(gcloud secrets versions access latest --secret=FIREBASE_STORAGE_BUCKET)
+
+timeout: '82800s'
