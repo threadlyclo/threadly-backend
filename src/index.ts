@@ -3,6 +3,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes';
+import { initializeFirebase, db, auth } from './firebase';
 
 dotenv.config();
 
@@ -20,7 +21,17 @@ app.get('/', (req, res) => {
   res.send('Server läuft – probiere POST /auth/register oder /auth/login');
 });
 
-// Server starten
-app.listen(PORT, () => {
-  console.log(`Server läuft auf Port ${PORT}`);
-});
+// Asynchroner Server-Start
+async function startServer() {
+  try {
+    await initializeFirebase();
+    app.listen(PORT, () => {
+      console.log(`Server läuft auf Port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Fehler bei der Firebase-Initialisierung:', error);
+    process.exit(1);
+  }
+}
+
+startServer();
