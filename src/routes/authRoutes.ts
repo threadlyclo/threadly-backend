@@ -1,7 +1,7 @@
 // src/routes/authRoutes.ts
 
 import express from 'express';
-import { createUser } from '../userService';
+import { createUser } from '../userService.js';
 
 const router = express.Router();
 

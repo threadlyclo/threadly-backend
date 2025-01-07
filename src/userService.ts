@@ -1,6 +1,6 @@
 // src/userService.ts
 
-import { db, auth } from './firebase';
+import { db, auth } from './firebase.js';
 import admin from 'firebase-admin';
 
 // Funktion zum Erstellen eines neuen Benutzers
